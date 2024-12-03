@@ -7,13 +7,23 @@ import {
 } from 'react-native';
 import { getGrades } from '../services/GradeServices';
 import { Avatar, FAB, ListItem } from '@rneui/base';
+import { useState } from 'react';
 
 export const ListGrades = ({ navigation }) => {
+  const [time, setTime] = useState();
+
+  const refreshList = () => {
+    setTime(new Date().getTime());
+  };
+
   const ItemGrade = ({ nota }) => {
     return (
       <TouchableHighlight
         onPress={() => {
-          navigation.navigate('GradeFormNav', { notita: nota });
+          navigation.navigate('GradeFormNav', {
+            notita: nota,
+            fnRefresh: refreshList,
+          });
         }}
       >
         <ListItem bottomDivider>
@@ -45,13 +55,17 @@ export const ListGrades = ({ navigation }) => {
         keyExtractor={(item) => {
           return item.subject;
         }}
+        extraData={time}
       />
 
       <FAB
         title="+"
         placement="right"
         onPress={() => {
-          navigation.navigate('GradeFormNav', { notita: null });
+          navigation.navigate('GradeFormNav', {
+            notita: null,
+            fnRefresh: refreshList,
+          });
         }}
       />
     </View>

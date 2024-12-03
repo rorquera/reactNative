@@ -1,7 +1,7 @@
 import { View, StyleSheet } from 'react-native';
 import { Input, Button } from '@rneui/base';
 import { useState } from 'react';
-import { saveGrade } from '../services/GradeServices';
+import { saveGrade, upgradeGrade } from '../services/GradeServices';
 
 export const GradeForm = ({ navigation, route }) => {
   let isNew = true;
@@ -21,15 +21,20 @@ export const GradeForm = ({ navigation, route }) => {
   const [grade, setGrade] = useState(gradeR == null ? null : gradeR + '');
   const [errorSubject, setErrorSubject] = useState();
   const [errorGrade, setErrorGrade] = useState();
-  const hasErrors = false;
+  let hasErrors = false;
 
   const save = () => {
     setErrorGrade(null);
     setErrorSubject(null);
     validate();
     if (!hasErrors) {
-      saveGrade({ subject: subject, grade: grade });
+      if (isNew) {
+        saveGrade({ subject: subject, grade: grade });
+      } else {
+        upgradeGrade({ subject: subject, grade: grade });
+      }
       navigation.goBack();
+      route.params.fnRefresh();
     }
   };
 
@@ -58,6 +63,7 @@ export const GradeForm = ({ navigation, route }) => {
         placeholder="Ejemplo: Matematicas"
         label="Materia"
         errorMessage={errorSubject}
+        disabled={!isNew}
       />
 
       <Input
